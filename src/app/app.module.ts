@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { environment } from '@env/environment';
 import { CoreModule } from '@app/core';
@@ -44,7 +45,11 @@ import { QuoteEffects } from './state/effects/quote.effects';
         strictActionImmutability: true
       }
     }), // must be imported as the last module as it contains the fallback route
-    EffectsModule.forRoot([QuoteEffects])
+    EffectsModule.forRoot([QuoteEffects]),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25, // Retains last 25 states
+      logOnly: environment.production, // Restrict extension to log-only mode
+    }),
   ],
   declarations: [AppComponent],
   providers: [],
