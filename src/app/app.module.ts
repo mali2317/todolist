@@ -15,6 +15,10 @@ import { AboutModule } from './about/about.module';
 import { LoginModule } from './login/login.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { StoreModule } from '@ngrx/store';
+import { reducers, metaReducers } from './state/reducers';
+import { EffectsModule } from '@ngrx/effects';
+import { QuoteEffects } from './state/effects/quote.effects';
 
 @NgModule({
   imports: [
@@ -32,7 +36,15 @@ import { AppRoutingModule } from './app-routing.module';
     HomeModule,
     AboutModule,
     LoginModule,
-    AppRoutingModule // must be imported as the last module as it contains the fallback route
+    AppRoutingModule,
+    StoreModule.forRoot(reducers, {
+      metaReducers,
+      runtimeChecks: {
+        strictStateImmutability: true,
+        strictActionImmutability: true
+      }
+    }), // must be imported as the last module as it contains the fallback route
+    EffectsModule.forRoot([QuoteEffects])
   ],
   declarations: [AppComponent],
   providers: [],

@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { finalize } from 'rxjs/operators';
+import { finalize, subscribeOn, filter } from 'rxjs/operators';
 
 import { QuoteService } from './quote.service';
+import { pipe } from 'rxjs';
+import { Store, select } from '@ngrx/store';
+import { AppState, getActiveQuote } from '@app/state/reducers';
+import { fetchQuote } from '@app/state/actions/quote.actions';
 
 @Component({
   selector: 'app-home',
@@ -12,18 +16,19 @@ export class HomeComponent implements OnInit {
   quote: string | undefined;
   isLoading = false;
 
-  constructor(private quoteService: QuoteService) {}
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit() {
     this.isLoading = true;
-    this.quoteService
-      .getRandomQuote({ category: 'dev' })
+    this.store.dispatch(fetchQuote({ category: 'dev' }));
+
+    this.store
       .pipe(
-        finalize(() => {
-          this.isLoading = false;
-        })
+        select(getActiveQuote),
+        filter((quote: string) => !!quote)
       )
       .subscribe((quote: string) => {
+        this.isLoading = false;
         this.quote = quote;
       });
   }
